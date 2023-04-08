@@ -1,0 +1,800 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[margin=1in,headheight=13.6pt]{geometry}
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{thrm}
+\newtheorem{thrm}{Theorem}[section]
+\theoremstyle{lma}
+\newtheorem{lma}{Lemma}[section]
+\theoremstyle{ppst}
+\newtheorem{ppst}{Proposition}[section]
+\theoremstyle{crlr}
+\newtheorem{crlr}{Corollary}[section]
+\usepackage{graphicx}
+\renewcommand{\baselinestretch}{1.5}
+\newenvironment{rcases}
+  {\left.\begin{aligned}}
+  {\end{aligned}\right\rbrace}
+\usepackage{color}  
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true
+    linktoc=all
+    linkcolor=blue
+}
+\usepackage{fancyheadings}
+\pagestyle{fancyplain}
+\fancypagestyle{plain}{
+\renewcommand{\headrulewidth}{0.4pt}
+}
+\lhead{\fancyplain{Haoyue(Heather) Tan}{Haoyue(Heather) Tan}}
+\rhead{\fancyplain{ECO375 lecture Notes}{ECO375 Lecture Notes}}
+\title{ECO375 - Applied Economatrics}
+\author{Heather Tan}
+\date{Sep - Dec 2019}
+\begin{document}
+
+\maketitle	
+\tableofcontents
+\pagebreak
+
+\section{Review of Statistics}
+\subsection{Steps of problem solving}
+\begin{enumerate}
+	\item give an question
+	\item set out a model
+	\item propose the estimator
+	\item check whether the estimator is good
+	\item if good, how to do inference?(confidence interval, hypothesis testing)
+\end{enumerate}
+\subsection{Problem solving example}
+\textbf{Question: } Average income in Canada
+\subsubsection{Model}
+\paragraph{a} Probability model: X = income and $X\sim N(\mu,\sigma^2)$ while $\mu $ is known and $\sigma^2$ is unknown. 
+\paragraph{b} Sample is $\{x_1,x_2,\cdots, x_n\}$ and assume a random sample iid(identically independently distribution)\\
+	\textbf{Identically:} same population\\
+	\textbf{Independently: } known about first guy provide no information about the next one.
+\subsubsection{Propose an Estimator}
+\begin{definition}
+	A statistics is a function of the data.
+\end{definition}	
+\begin{definition}
+	An estimator is a statistic that is used to guess the parameter of interest
+\end{definition}
+In this question, parameter of interest is $\mu$\\
+Proposed estimator: sample average: $\bar{X}_n = \frac{1}{n}\sum_{i=1}^nx_i$
+\subsubsection{Is this a good estimator?}
+	To answer this we need to know the sampling distribution of the estimator\\
+	
+\textbf{How do we find the sample distribution?}\\
+$E[\bar{X_n}] = E[\frac{1}{n}\sum_{i=1}^nX_i] = \frac{1}{n}E[\sum_{i=1}^nX_i] = \frac{1}{n}\sum_{i=1}^nE[X_i] = \frac{1}{n}\sum_{i=1}^n\mu = \frac{1}{n} n\cdot \mu = \mu$\\
+$\implies \bar{X_n}$ is an unbiased estimator of $\mu$
+\begin{align*}
+	Var(\bar{X_n}) &= Var(\frac{1}{n}\sum_{i=1}^nX_i)\\
+	&= \frac{1}{n^2}Var(\sum_{i=1}^nX_i), iid\\
+	&= \frac{1}{n^2}\sum_{i=1}^nVar(X_i)\\
+	&= \frac{1}{n^2}\sum_{i=1}^n\sigma^2\\
+	&= \frac{1}{n^2}\cdot n\cdot \sigma^2 = \frac{\sigma^2}{n}
+\end{align*}
+An estimator is called \textbf{consistent} when its 	sampling distribution becomes more and more concentrated around the parameter of interest as the sample size increase. \\
+\textbf{Note that $\bar{X_n}$ is a consistent estimator of $\mu$: }
+$Var(\bar{X_n} = \frac{\sigma^2}{n} \to 0, as\  n\to \infty$\\
+\textbf{What about $\bar{X_n}\sim$?}
+Fact: 
+\begin{align*}
+	Y_1 &\sim N(\mu_1, \sigma_1^2)\\
+	Y_2 &\sim N(\mu_2, \sigma_2^2)\\
+	\implies Y_1+Y_2 &\sim N(\mu_1+\mu_2, \sigma_1^2+\sigma_2^2+2cov(y_1,y_2))\\
+	\bar{X_n} &= \frac{1}{n}\sum_{i=1}^nX_i \sum N(\mu, \frac{\sigma^2}{n})
+\end{align*}
+\subsubsection{how to do inference}
+CI: where the parameter is likely to lie in relation to the estimate\\
+Fact:
+\begin{align*}
+	E[Y]&=0,Var(Y) = \sigma^2 \implies Z = \frac{y-\mu}{\sigma}, E[Z] = 0, Var(Z) = 1\\
+	Z &= \frac{\bar{X_n}-E[\bar{X_n}]}{\sqrt{Var(\bar{X_n)}}} = \frac{\bar{X_n}-\mu}{\sqrt{\sigma^2/n}}\sim N(0,1)\\
+	1-\alpha &=P(-Z_{\alpha/2} \leq Z \leq Z_{\alpha/2})\\
+	&= P(-Z_{\alpha/2} \leq \frac{\bar{X_n}-\mu}{\sqrt{\sigma^2/n}} \leq Z_{\alpha/2})\\
+	&= P(\bar{X_n}-Z_{\alpha/2}\frac{\sigma}{\sqrt{n}} \leq \mu \leq \bar{X_n}+Z_{\alpha/2}\frac{\sigma}{\sqrt{n}})\\
+	(1-\alpha)\% CI &= [\bar{X_n}-Z_{\alpha/2}\frac{\sigma}{\sqrt{n}} ,\bar{X_n}+Z_{\alpha/2}\frac{\sigma}{\sqrt{n}}]
+\end{align*}
+
+\section{Simple Regression - Model, Estimate OLS, Properties of OLS}
+\subsection{Econometric model}
+(Y,X,U) are random variables with joint distribution: $y = g(x,u)$
+\begin{itemize}
+	\item Y: dependent variable
+	\item X: explanatory variable 
+	\item U: unobserved variable
+\end{itemize}
+\textbf{Facts: }
+\begin{itemize}
+	\item Summations:
+	\begin{itemize}
+		\item $\sum_{i=1}^n(x_i-\bar{x}) = 0$
+		\item $\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y}) = \sum_{i=1}^nx_i(y_i-\bar{y}) = \sum_{i=1}^n(x_i-\bar{x})y_i$
+	\end{itemize}
+	\item Law os iterated expectations: $E(y) = E[E(Y|X)]$
+\end{itemize}
+\textbf{Want to knwo}: $\frac{\partial y}{\partial x} = \frac{\partial g}{\partial x}|_v$
+\subsubsection{SLR Assumption 1: linear in parameters}
+\begin{align*}
+	y &= \beta_0 +\beta_1x+u\\
+	\frac{\partial y}{\partial x} &= \beta_1
+\end{align*}
+parameters $(\beta_0,\beta_1)$\\
+E.g
+\begin{align*}
+	y &=\beta_0+\beta_1x^2+u \implies \frac{\partial y}{\partial x} = 2\beta_1x\\
+	log(y) = \beta_0+\beta_1log(x)+u\implies \frac{\partial log(y)}{\partial log(x)} = \beta_1 \approx \frac{\Delta y\%}{\Delta x\%}
+\end{align*}
+
+\subsubsection{SLR Assumption 2: Zero Conditional Mean}
+\begin{enumerate}
+	\item E[U|X] = E[U]
+	\item E[U]=0
+\end{enumerate}
+E.g.1 y = wage, x = training program, u = abilities\\
+If training is assigned randomly\\
+$\implies$ X and U are fully independent\\
+$\implies$ A2.1 implies\\
+\\
+E.g.2 y = wage, x = education, u = abilities\\
+$E[U|x=0]\neq E[U|X=1]\\ \implies$ A2.1 is violeted
+
+\textbf{Implication of A1 and A2}
+\begin{align*}
+	E[y|x] &\stackrel{A_1}{=} E[\beta_0+\beta_1x+u|x]\\
+	&= \beta_0+\beta_1E[x]+E[u|x]\\
+	&=\beta_0+\beta_1x+E[u]\\
+	&= \beta_0+\beta_1x\\
+	&\implies E[y|x] = \beta_0+\beta_1x
+\end{align*}
+conditional expectation is called regression funtion
+
+\subsubsection{SLR Assumption 3: Random Sample}
+$(x_1,y_1), (x_2,y_2),\cdots, x_n,y_n$ i.i.d
+
+\subsubsection{SLR Assumtion 4: No Perfect Collinearity}
+$\{x_1, x_2,\cdots, x_n\}$ are not all the same(sample variation)
+\pagebreak
+\subsection{Estimate OLS}
+Idea: choose your estimator of $\beta_0$ and $\beta_1$ to minimize dthe su of the  square of the errors.
+
+\begin{align*}
+	min \ Q(b_0,b_1) &= min \ \sum_{i=1}^n(y_1-b_0-b_1x)^2\\
+	\frac{\partial Q}{\partial b_0} &= -\sum_i^n2(y_1-\hat{\beta_0}-\hat{\beta_1}x_i) = 0 \quad(i)\\
+	\frac{\partial Q}{\partial b_1} &= -\sum_i^n2(y_1-\hat{\beta_0}-\hat{\beta_1}x_i)x_i = 0\\
+	\text{From(i) } &\frac{\sum y_i}{N}-\frac{\sum\hat{\beta_0}}{N} - \frac{\sum\hat{\beta_1}x_i}{N} =0\\
+	& \bar{y} -\frac{N\cdot \hat{\beta_0}}{N}-\hat{\beta_1}\bar{x} = 0\\
+	& \implies \hat{\beta_0} = \bar{y}-\hat{\beta_1}\bar{x}\quad (ii)\\
+	\text{From(i)-(ii)} & \sum_i(y_i-(\bar{y}-\hat{\beta_1}x)-\hat{\beta_1}x_i)x_i=0\\
+	&\implies \sum_i(y_i-\bar{y}-(\hat{\beta_1}(\bar{x}-x_i))x_i=0\\
+	&\implies \sum_i(y_i-\bar{y})x_i-\hat{\beta_1}\sum(x_i-\bar{x})x_i=0\\
+	&\implies \hat{\beta_1} = \frac{\sum x_i(y_i-\bar{y})}{\sum x_i(x_i-\bar{x})} = \frac{\sum(x_i-\bar{x})y_i}{\sum(x_i-\bar{x})^2}
+\end{align*}
+\subsection{Properties of OLS - Is OLS a good estimator?}
+\subsubsection{Expected value of $\hat{\beta_1}$}
+conditional on $x_1,x_2,\cdots, x_n$
+\begin{align*}
+	E[\hat{\beta_1}|x_1,x_2,\cdots, x_n] &= E[\beta_1+\frac{\sum_{i=1}^n(x_i-\bar{x})u_i}{\sum_{i=1}^n(x_i-\bar{x})^2}|x_1,x_2,\cdots, x_n]\\
+	&=\beta_1 + E[\frac{\sum_{i=1}^n(x_i-\bar{x})u_i}{\sum_{i=1}^n(x_i-\bar{x})^2}|x_1,x_2,\cdots, x_n]\\
+	&=\beta_1+\frac{1}{\sum_{i=1}^n(x_i-\bar{x})^2}\sum_{i=1}^nE[(x_i-\bar{x})u_i|x_1,x_2,\cdots, x_n]\\
+	&=\beta_1+\frac{1}{\sum_{i=1}^n(x_i-\bar{x})^2}\sum_{i=1}^n(x_i-\bar{x})E[u_i|x_1,x_2,\cdots, x_n]\\
+	&\implies E[\hat{\beta_1}|x_1,x_2,\cdots, x_n]] = \beta_1
+\end{align*}
+\textbf{Law of iterated expectations: } $E[y] = E[E[y|x]]$\\
+i.e average the average given by groups $\implies E[\hat{\beta_1}] = E[E[\hat{\beta_1}|x_1,x_2,\cdots, x_n]] = E[\beta_1]$ by LIE
+\subsubsection{Variance of $\hat{\beta_1}$}
+\begin{align*}
+	Var(\hat{\beta_1}) &= Var(\beta_1+\frac{\sum(x_i-\bar{x})u_i}{\sum(x_i-\bar{x})^2}) = Var(\frac{\sum(x_i-\bar{x})u_i}{\sum(x_i-\bar{x})^2})\\
+	&=\frac{1}{[\sum(x_i-\bar{x})^2]^2}\cdot Var(\sum(x_i-\bar{x})u_i)\\
+	Var(\sum(x_i-\bar{x})u_i)&= \sum_{i=1}^nVar(x_i-\bar{x})u_i)\\
+	&= \sum_{i=1}^n(x_i-\bar{x})^2Var(u_i|x_1,x_2,\cdots, x_n)\\
+	&= \sum_{i=1}^n(x_i-\bar{x})^2Var(u_i|x_i)\\
+	&\stackrel{A5}{=}\sigma_{u}^2 \sum_{i=1}^n(x_i-\bar{x})\\
+	Var(\hat{\beta_1}) &=\frac{1}{[\sum(x_i-\bar{x})^2]^2}\cdot\sigma_{u}^2 \sum_{i=1}^n(x_i-\bar{x})^2\\
+	&= \frac{\sigma_{u}^2}{\sum(x_i-\bar{x})^2}
+\end{align*}
+\subsection{SLR Assumption 5: Homoscedasticity}
+$Var{u|x} = \sigma_u^2\implies Var(y|x) = Var(\beta_0+\beta_1x+u|x) = Var(u|x) = \sigma_u^2$
+\subsection{Gauss-Markov Theorem}
+Under assumption A1-A5, OLS(Ordinary Least Square) is BLUE(Best Linear Unbiased Estimator)
+
+\subsection{Standard Error}
+let $\hat{y}_i = \hat{\beta_0}+\hat{\beta_1}x_i$\\
+and $\hat{u}_i = y_i-\hat{y_i}$\\
+Define $\hat{\sigma}_u^2 = \frac{1}{n-2}\sum_{i=1}^n(\hat{u}_i^2)$\\
+\textbf{Standard Error: } $se(\hat{\beta}_1) = \sqrt{\frac{\hat{\sigma}_u^2}{\sum_{i=1}^n(x_i-\bar{x})^2}}$\\
+(without hat on $\sigma_u^2$ would be sd of $\hat{\beta_1}$)
+
+\subsection{Algebraic Properties of OLS}
+\begin{itemize}
+	\item $\sum_{i=1}^n\hat{u}_i = 0$
+	\item $\sum_{i=1}^n\hat{u}_ix_i = 0$
+	\item $R^2 = 1-\frac{SSR}{SST}\in [0,1]$ where $SSR = \sum_{i=1}^n(\hat{u}_i^2), SST = \sum_{i=1}^n(y_i-\bar{y})^2$
+\end{itemize}
+
+
+\section{Multi-Linear Regression}
+\subsection{MLR Assumption1-Assumption4}
+\begin{itemize}
+	\item MLR Assumption 1: $y = \beta_0+\beta_1x_1+\cdots,+\beta_kx_k+u = [1,x_1,x_2,\cdots, x_k]\begin{bmatrix}
+		\beta_0\\
+		\beta_1\\
+		\cdots\\
+		\beta_k
+	\end{bmatrix}+u\implies y = X\beta+u$
+	\item MLR Assumption 2: $E[u|x_1,\cdots, x_n] = 0$
+	\item MLR Assumption 3: IID Data $\{yi,x_{1i},x_{2i},\cdots,x_{ki} \quad i = 1,\cdots, N \}$
+	\item MLR Assumption 4: No perfect Collinearity -  There is no exact linear relationship among the explanatory variables
+\end{itemize}
+E.g of perfect collinearity: \\
+y = share of votes for A\\
+$x_1$ = Advertisement Expenditure for A
+$x_2$ = Adv. Expenditure for B
+$x_3$ = Total Adv. Expenditure
+\begin{align*}
+	y\uparrow &=\beta_0+\beta_1x_1\uparrow+\beta_2x_2+\beta_3x_3+u\\
+	x_3 &= x_1\uparrow +x_2\downarrow ,x_3 \text{ not } \bot x_1\\
+	y&= \beta_0+(\beta_1+\beta_3)x_1+(\beta_2+\beta_3)x_2+u
+\end{align*}
+\subsection{Estimator OLS}
+$\stackrel{min}{(b_-.b_1,\cdots,b_k)} \sum_{i=1}^n(y_i-b_0-b_1x_{1i}-b_2x_{2i}-\cdots - b_kx_{ki})^2 \implies$ OLS is the solution fo this system of equations.
+
+\subsection{Algebraic Properties of OLS: }
+\begin{itemize}
+	\item $R^2\uparrow$ when we add more explanatory variables
+	\item partially out(get the effect of $x_1$ out of other x)\begin{itemize}
+		\item 1st: regress $x_1$ on all other $x_2, x_3,\cdots,x_k$ and get $x_1 = \alpha_1+\alpha_2x_{2i}+\cdots+\alpha_kx_{ki}+\Omega$.\\ Get residuals $\hat{\Omega} = x_{1i}-(\alpha_1+\alpha_2x_2+\cdots+\alpha_kx_k)$
+		\item 2nd: regress $y_i$ on $\hat{\Omega}_i\implies y_i = r_o+r_1\hat{\Omega}_i+v_i$. Thus $\hat{r}_1 = \frac{\sum_{i=1}^n(\hat{\Omega_i})y_i}{\sum_{i=1}^n\Omega^2} = \hat{\beta_1}$\\Interpretation of $\hat{r}_1$: The variation of $x_1$ that cannot be explained by other explanatory variables, which is the part of $x_1$ that is uncorrelated with $x_2,x_3,\cdots,x_k$
+	\end{itemize}
+\end{itemize}
+
+\subsection{Statistical properties of OLS}
+\begin{thrm}
+	Under A1-A4, OLS is unbiased - $E[\hat{\beta}_j] = \beta_j, j=0,1,\cdots,k$
+\end{thrm}
+\subsubsection{Omitted Variable Bias}
+$\begin{cases}
+	y = \beta_0+\beta_1x_1+\beta_2x_2+u\\
+	E[u|x_1,x_2] = 0
+\end{cases}$\\
+But suppose you ignore $x_2$ and instead consider $y = \beta_0+\beta_1x_1+u$\\
+E.g: Y = incidence of cancer, $x_1$ =  coffee,  $x_2$ = smoking
+\begin{align*}
+	&\begin{cases}
+		x_2 = \alpha_0+\alpha_1x_1+v\\
+		E[v|x_1]=0
+	\end{cases}\\
+	y &= \beta_0+\beta_1x_1+\beta_2(\alpha_0+\alpha_1x_1+v)+u\\
+	y &= (\beta_0+\beta_2\alpha_0)+(\beta_1+\beta_2\alpha_1)x_1+\beta_2v+u\\
+	\implies y&=\delta_0+\delta_1x_1+\Sigma
+\end{align*}
+If $E[\Sigma|x_1] = 0 \implies $ OLS $\hat{\delta_1}$ for $\delta_1$ is unbiased.\\
+$E[\hat{\delta}_1] = \delta_1 = \beta_1+\beta_2\cdot \alpha_1 >\beta_1$ i.e $\delta_1$ is an biased estimator of $\beta_1$.
+
+\subsubsection{MLR Assumption 5: Homoscedasticity}
+\begin{align*}
+	Var(u|x_1,x_2,\cdots,x_k) = \sigma_u^2
+\end{align*}
+\textbf{Implication:} $Var(y|x) = \sigma_u^2$
+\begin{thrm}
+	Under A1-A5: $Var(\hat{\beta}_j) = \frac{\sigma_u^2}{[\sum_{i=1}^n(x_{ij}-\bar{x}_j)^2][1-R_j^2]}, for \ j = 1,2,\cdots, k$
+\end{thrm}
+When $R_j^2$ is the $R^2$ of the regression of $X_j$ on all other x's.
+
+\subsection{Decision on Adding Explanatory Variables}
+Supposed we have $y = \beta_0+\beta_1x_1+\cdots+\beta_kx_k+u$, should we divide u to $u = \beta_{k+1}x_{k+1} +v$ and get $y = \beta_0+\beta_1x_1+\cdots+\beta_kx_k+\beta_{k+1}x_{k+1} +v$?\\
+\textbf{Possibilities}:
+\begin{enumerate}
+	\item if $\beta_{k+1} = 0$, then we should \textbf{NOT INCLUDE} $x_{k+1}$
+	\item if $\beta_{k+1} \neq 0$ and $x_{k+1}$ is uncorrelated with all other x's\begin{itemize}
+		\item Bias? There is no omitted variable bias problem here
+		\item Var? Note that $R_j^2 = 0 \wedge\sigma_u^2\downarrow \implies Var(\hat{\beta_1})\downarrow \implies$ not solving bias problem, but decrease the variance here. 
+		\item \textbf{INCLUDE} $x_{k+1}$
+	\end{itemize}
+	\item if $\beta_{k+1} \neq 0$and $x_{k+1}$ is correlated with other x's\begin{itemize}
+		\item Bias? Excluding $x_{k+1}$ leads to omitted variable bias.
+		\item Var? Note that $R_j^2 \uparrow\implies Var(\hat{\beta_1})\uparrow\ \wedge\ \sigma_u^2\downarrow \implies Var(\hat{\beta_1})\downarrow \implies$ Unclear whether $Var(\hat{\beta_1})$ increase or decrease
+		\end{itemize}
+\end{enumerate}
+
+\subsection{MLR Assumption 6: Normality}
+\begin{align*}
+	U\sim N(0,\sigma_u^2) \text{conditional on X}
+\end{align*}
+\subsubsection{Implication}
+\begin{align*}
+	y &= X\beta+u\\
+	y|x &\sim N(X\beta,\sigma_u^2)
+\end{align*}
+\subsubsection{Sampling Distribution of OLS}
+\begin{thrm}
+	Under A1-A6: $\hat{\beta_j}\sim N(\beta_j,\frac{\sigma_u^2}{[\sum_{i=1}^n(x_{ij}-\bar{x}_j)^2][1-R_j^2]})\implies \frac{\hat{\beta_j}-\beta_j}{\sqrt{Var(\hat{\beta_j})}}\sim N(0,1)$ for $j = 1,2,\cdots, k$
+\end{thrm}
+\textbf{Note that:}
+\begin{align*}
+	\hat{\sigma_u^2} &=\frac{1}{n-k-1}\sum_{i=1}^n(\hat{u_i})^2, \hat{u_i} = y_i-x_i\hat{\beta}\\
+	se(\hat{\beta_j}) &= \sqrt{\frac{\sigma_u^2}{[\sum_{i=1}^n(x_{ij}-\bar{x}_j)^2][1-R_j^2]}} = \sqrt{\widehat{Var(\hat{\beta_j})}}\\
+	&\implies \frac{\hat{\beta_j}-\beta_j}{\sqrt{\widehat{Var(\hat{\beta_j})}}} = \frac{\hat{\beta_j}-\beta_j}{se(\hat{\beta_j})}\sim \tau(n-k-1)
+\end{align*}
+\subsubsection{Confidence Interval}
+\begin{align*}
+	T &= \frac{\hat{\beta_j}-\beta_j}{se(\hat{\beta_j})}\sim \tau(n-k-1)\\
+	1-\alpha &= Pr(-C\leq T\leq C)\\
+	&= Pr(\hat{\beta_j}-c\cdot se(\hat{\beta_j}) \leq \beta_j \leq \hat{\beta_j}+c\cdot se(\hat{\beta_j}))\\
+	&\implies (1-\alpha)\% CI \ is \ [\hat{\beta_j}-c\cdot se(\hat{\beta_j}),\hat{\beta_j}+c\cdot se(\hat{\beta_j})]
+\end{align*}
+
+\section{T-Test}
+\subsection{Hypothesis Testing}
+\begin{align*}
+	H_0&: \beta_j = \beta_j^o\\
+	H_1&: \beta_j\neq \beta_j^o
+\end{align*}
+Two types of errors:
+\begin{enumerate}
+	\item Reject H0 when H0 is true
+	\item Reject H1 when H1 is true
+\end{enumerate}
+\textbf{Trade off}: $\downarrow Pr(Rej\ H_0|H_0)\implies \uparrow Pr(Rej \ H_1|H_1)$\\
+\textbf{Asymetric}: fix the $Pr(Rej\ H_0|H_0)$ at a very small level(Reject H0 when there is stron gevidence to against it)
+\subsubsection{4 Steps of doing T-test}
+\begin{enumerate}
+	\item Fix the $Pr(Rej\ H_0|H_0)$ at some level, say $\alpha$
+	\item Define a test-statistics: $T = \frac{\hat{\beta_j}-\beta_j}{se(\hat{\beta_j})}\sim \tau(n-k-1)$ if $\beta_j = \beta_j^o$. We have to knwo the distribution of test-stat under H0
+	\item Define the rejection region: Rejection Region  = $\{|T|>c\}$ where c is the critical value\begin{align*}
+		\alpha &= Pr(Rej\ H_0|H_0) = Pr(|T|>c|H_0)\\
+		&= 1- Pr(-C\leq T\leq C|H_0 \text{ True})\\
+		&\to \text{ get critical value from the table of t-distribution}
+	\end{align*}
+	\item check\begin{itemize}
+		\item calculate $T = \frac{\hat{\beta_j}-\beta_j}{se(\hat{\beta_j})}$ in the sample
+		\item compute that with critical value c and decide whether reject H0 or not
+	\end{itemize}
+\end{enumerate}
+\subsubsection{P-value}
+\textbf{P-value: }given the observed value of the test-statistic, what is the \textbf{smallest} significane level($\alpha$) at which the null would be rejected?\\
+\textbf{Decrease} p-value $\implies$ The \textbf{greater} the evidence against H0
+
+\section{F-Test}
+For $Y = \beta_0 +\beta_1x_1+\cdots+\beta_kx_k+u$, the joint test test for: last q coefficients are zero\\
+$H_0: \beta_{k-q+1} = 0, \beta_{k-q+2}=0,\cdots,\beta_k = 0$\\
+$H_1: $ at least one of them is not 0\\
+\textbf{Idea:} Under $H_0$, we have the restricted model: $y = \beta_0+\beta_1x_1+\cdots+\beta_{k-q}x_{k-q}+u$\\
+Recall: when exclude X's from a regression $ \downarrow R^2 = 1-\frac{SSR\uparrow}{SST}$. We can build a test-statistic based on by how much SSR increase.\\
+\subsubsection{F-test Test Statistic}
+\begin{align*}
+	F = \frac{(SSR_R - SSR_{UR})/q}{SSR_{UR}/(n-k-1)}\sim F(q,n-k-1)
+\end{align*}
+
+\section{Conclusion in Model Assumptions}
+\subsection{Data Assumption}
+A3: IID Data\\
+A4: No perfect linearity
+
+\subsection{$E[Y|X] = X\beta$}
+\begin{align*}
+E[Y|X] = X\beta \impliedby
+\begin{cases}
+		A1 &: Y=X\beta+u\\
+		A2 &:E[u|X] = 0
+\end{cases}
+\end{align*}
+
+\subsection{$Var(Y|X) = \sigma_u^2$}
+\begin{align*}
+Var(Y|X) = \sigma_u^2 \impliedby
+\begin{cases}
+		A1 &: Y=X\beta+u\\
+		A2 &:E[u|X] = 0\\
+		A5 &: Var[u|X] = \sigma_u^2
+\end{cases}
+\end{align*}
+
+\subsection{$Y|X \sim N(X\beta, \sigma_u^2)$}
+\begin{align*}
+Y|X \sim N(X\beta, \sigma_u^2) \impliedby
+\begin{cases}
+		A1 &: Y=X\beta+u\\
+		A2 &:E[u|X] = 0\\
+		A5 &: Var[u|X] = \sigma_u^2\\
+		A6 &: u|X\sim N(0,\sigma_u^2)
+\end{cases}
+\end{align*}
+
+\subsection{OLS unbiased}
+\begin{align*}
+\text{OLS unbiased }\impliedby
+\begin{cases}
+		A1 &: Y=X\beta+u\\
+		A2 &:E[u|X] = 0\\
+		A3 &: \text{IID Data}\\
+		A4&: \text{No perfect linearity}
+\end{cases}
+\end{align*}
+\subsection{OLS is BLUE, $\hat{\beta_j}\sim N(\beta_j, \frac{\sigma_u^2}{[\sum(x_{ij}-\bar{x_j})^2](1-R_j^2)})$}
+\begin{align*}
+\text{OLS is BLUE, }\hat{\beta_j}\sim N(\beta_j, \frac{\sigma_u^2}{[\sum(x_{ij}-\bar{x_j})^2](1-R_j^2)}) \impliedby
+\begin{cases}
+		A1 &: Y=X\beta+u\\
+		A2 &:E[u|X] = 0\\
+		A3 &: \text{IID Data}\\
+		A4 &: \text{No perfect linearity}\\
+		A5 &: Var[u|X] = \sigma_u^2
+\end{cases}
+\end{align*}
+\section{STATA Output}
+\begin{tabular}{c|c c c} 
+	Source & ss & df & MS\\
+	\hline
+	Model & SSE &k & SSE/k\\
+	Residual & SSR & n-k-1 & SSR/n-k-1 = $\sigma_u^2$\\
+	\hline
+	Total & SST = SSE=SSR = $\sum(y_i-\bar{y})$ &n-1 & SST/n-1
+\end{tabular}
+
+\section{Asymptotics}
+\textbf{Why care?}\\
+Since $x\sim N(\mu, \sigma_u^2)$ and IID Data $\implies \bar{x} = N(\mu, \sigma_u^2), \bar{x} = \frac{1}{n}\sum x_i$.\\
+When $x \not\sim$ Normal, $\implies \bar{x}\not\sim N\implies T = \frac{\bar{x}-\mu}{\sqrt{Var(\bar{x})}}\not\sim N(0,1)\wedge T = \frac{\bar{x}-\mu}{\sqrt{\hat{\sigma^2}/n}}\not\sim \tau(n-1)\implies $ we cannot do CI and T or F testing.\\
+\textbf{Solution: } Use asymptotic theory(or "large samples")\\
+Same problem/Solution for linear regression models: What if A6 unsatisfied that $u|x \not\sim N$?
+
+\subsection{Consistency}
+\begin{definition}
+	$ \hat{\theta}_n$ is a consistent estimator of $\theta$ if for every $\epsilon >0, Pr(|\hat{\theta}_n-\theta|<\epsilon \to 1 \text{ when } n\to \infty)$
+\end{definition}
+Notation: $\hat{\theta}_n \stackrel{p}{\to}\theta_n$
+
+\subsubsection{Law of large number}
+Let $x_1,x_2,\cdots, x_n$ be iid with mean $\mu = E[x]$\\
+Then $\bar{X}_n = \frac{1}{n}\sum_{i=1}^nx_i \stackrel{p}{\to} E[x]=\mu$
+Intuition: $Var(\bar{x}) = \frac{\sigma^2}{n} \to 0$ as $n \to \infty$
+
+\subsubsection{Properties}
+Let $\hat{\theta}_n\stackrel{p}{\to}\theta \wedge \hat{\alpha}_n\stackrel{p}{\to} \alpha$\\
+\begin{itemize}
+	\item $\hat{\theta_n}+\hat{\alpha_n}\stackrel{p}{\to} \theta+\alpha$
+	\item $\hat{\theta_n}\cdot \hat{\alpha_n}\stackrel{p}{\to} \theta \cdot \alpha$
+	\item $\hat{\theta_n}/\hat{\alpha_n}\stackrel{p}{\to} \theta/\alpha$ provided $\alpha \neq 0$
+	\item $g(\hat{\theta_n})\stackrel{p}{\to}g(\theta)$ provided that $g(\cdot)$ is a continuous function
+\end{itemize}
+
+\subsection{Consistency of $\hat{\beta}_j$ in Regression Model}
+\begin{thrm}
+	Under A1-A4, OLS is consistent. i.e $\hat{\beta_j}\stackrel{p}{\to} \beta_j$ for j=1,2,....,k
+\end{thrm}
+\begin{proof}
+	Since $\hat{\beta_1} = \frac{\sum_{i=1}^n(x_i-\bar{x})y_i}{\sum_{i=1}^n(x_i-\bar{x})^2} = \beta_1 + \frac{\frac{1}{n}\sum_{i=1}^n(x_i-\bar{x})u_i}{\frac{1}{n}\sum_{i=1}^n(x_i-\bar{x})^2}$\\
+we rewrite the \textbf{numerator} as
+\begin{align*}
+	\frac{1}{n}\sum_{i=1}^n(x_i-\bar{x})u_i &= \frac{1}{n}\sum_{i=1}^n(x_i-E(x_i)+E(x_i)-\bar{x})u_i \\
+	&= \frac{1}{n}\sum_{i=1}^n(x_i-E(x_i))u_i + \frac{1}{n}\sum_{i=1}^n(E(x_i)-\bar{x})u_i\\
+	&= \frac{1}{n}\sum_{i=1}^n(x_i-E(x_i))u_i + (E(x_i)-\bar{x})\frac{1}{n}\sum_{i=1}^nu_i
+\end{align*}
+by A3 iid Data, $\bar{X} = \frac{1}{n}\sum_{i=1}^nX \stackrel{p}{=} EX$
+\begin{align*}
+	\frac{1}{n}\sum_{i=1}^n(x_i-\bar{x})u_i &=\frac{1}{n}\sum_{i=1}^n(x_i-E(x_i))u_i + (E(x_i)-\bar{x})\frac{1}{n}\sum_{i=1}^nu_i\\
+	&\stackrel{p}{\to}E[(x-E(x))u]+(E(x)-\bar{x})\frac{1}{n}E(u)\\
+	&= E[(x-E(x))(u-E(u))] + 0 \cdot \frac{1}{n}E(u)\\
+	&=cov(x,u)
+\end{align*}\\
+and the \textbf{denominator} can be rewrite as
+\begin{align*}
+	\frac{1}{n}\sum_{i=1}^n(x_i-\bar{x})^2 &= \frac{1}{n}\sum_{i=1}^n[x_i^2+\bar{x}^2-2x_i\bar{x}]\\
+	&= \frac{1}{n}\sum_{i=1}^nx_i^2-(\bar{x})^2
+\end{align*}
+by A3 iid Data, $\bar{X} = \frac{1}{n}\sum_{i=1}^nX \stackrel{p}{=} EX$
+\begin{align*}
+	\frac{1}{n}\sum_{i=1}^nx_i^2 &\stackrel{p}{\to} E[x^2]\\
+	\frac{1}{n}\sum_{i=1}^n(\bar{x})^2 &\stackrel{p}{\to} [E(x)]^2\\
+	\frac{1}{n}\sum_{i=1}^n(x_i-\bar{x})^2 &=E[x^2]-[E(x)]^2 = Var(x)
+\end{align*}
+In conclusion, under the A3 iid Data assumption, we can imply that
+\begin{align*}
+	\hat{\beta_1} = \frac{\sum_{i=1}^n(x_i-\bar{x})y_i}{\sum_{i=1}^n(x_i-\bar{x})^2} \stackrel{p}{\to} \beta_1 +\frac{cov(x,u)}{Var(x)}
+\end{align*}
+\end{proof}
+
+\subsection{Asymptotic Distribution}
+\begin{definition}
+	Let $\{z_1,z_2,\cdots,z_n,\cdots\}$ be a sequence of random variables s.t for all Z $Pr(Z_n \leq z) = F_{Z_n}(z)\to Fz(z) = Pr(Z\leq z)$ as $n \to \infty$ , we say $F_z$ is the asymptotic distribution of $Z_n$
+\end{definition}
+Notation: $Z_n \stackrel{a}{\sim} Z$ or $Z_n\stackrel{d}{\to}Z$\\
+If $Z\sim N(0,1)$ then we denote $Z_n \stackrel{a}{\sim} N(0,1)$
+\subsubsection{Central limit theorem}
+let $x_1,x_2,\cdots, x_n$ be a random sample with mean $\mu$ and variance $\sigma^2 \implies \frac{\bar{x}-\mu}{\sqrt{\sigma^2/n}}$
+\begin{thrm}
+	Under A1-A5\begin{itemize}
+		\item $\frac{\hat{\beta_j}-\beta_j}{\sqrt{Var(\hat{\beta_j})}}\stackrel{a}{\sim} N(0,1)$
+		\item $\frac{\hat{\beta_j}-\beta_j}{se(\hat{\beta_j})}\stackrel{a}{\sim} N(0,1)$
+		\item usual CI,T-test, F-tests are asymptotically valid.
+	\end{itemize}
+\end{thrm}
+
+\section{Heteroskedasticity(Assumption 5 unsatisfied)}
+$Var(u|x) \neq \sigma_u^2 \implies$
+\begin{itemize}
+	\item from A1-A5 cannot imply the formula: $Var(\hat{\beta}_j) = \frac{\sigma_u^2}{[\sum(x_{ij}-\bar{x_j})^2](1-R_j^2)}$
+	\item OLS is not guaranteed to be BLUE
+\end{itemize}
+Note that if A5 is wrong but you use the T-stat to construct test and CI, then: The test and CI are invalid. 
+
+\subsection{Het-Robust SE}
+\begin{align*}
+	\hat{\beta_1} &= \beta_1+\frac{\sum(x_i-\bar{x})u_i}{\sum(x_i-\bar{x})^2}\\
+	Var(\hat{\beta_1}) &= \frac{1}{[\sum(x_i-\bar{x})^2]^2}\cdot Var(\sum(x_i-\bar{x})u_i)\\
+	&=\frac{1}{[\sum(x_i-\bar{x})^2]^2}\cdot \sum_{i=1}^n(x_i-\bar{x})^2 \cdot Var(u_i|x_i)
+\end{align*}
+Take $Var(u_i|x_i) = \sigma_i^2$\\
+\textbf{Problem: } we would have to estimate all $\beta$'s and all $\sigma_i^2$, Halbut White noticed that
+\begin{align*}
+	Var(u|x) &= E[u^2|x]-(E[u|x])^2\\
+	&=E[u^2|x]\\
+	\widehat{Var({\hat{\beta_1}})} &= \frac{1}{[\sum(x_i-\bar{x})^2]^2}\cdot \sum_{i=1}^n(x_i-\bar{x})^2 \cdot (\hat{u_1})^2 \text{ when } \hat{u}_i = y-x_i\hat{\beta}
+\end{align*}
+It turns out that $\widehat{Var({\hat{\beta_1}})}$ is a consistent estimator of $Var(\hat{\beta_j})\implies T = \frac{\hat{\beta_j}-\beta_j}{\widehat{Var{\hat{\beta_1}}}}\stackrel{a}{\sim}N(0,1)$
+\subsection{Generalized Least Squares(GLS)}
+\begin{align*}
+	Var(u|x) = \sigma_u^2\cdot h(x) 
+\end{align*}
+ h(x) has to be positive and known
+\begin{align*}
+	\sigma_u^2h(x)& = Var(u|x) = E[u^2|x]-E[u|x]^2 = E[u^2|x]-0\\
+	\implies \sigma_u^2 &= \frac{E[u^2|x]}{h(x)} = E[\frac{u^2}{h(x)}|x] = E[\frac{u}{\sqrt{h(x)}}|x]\\
+	&=E[(u^*)^2|x] = Var(u^*|x)\\
+	y\cdot\frac{1}{\sqrt{h(x)}}&=\beta_0\cdot\frac{1}{\sqrt{h(x)}}+\beta_1x_1\cdot\frac{1}{\sqrt{h(x)}}+\cdots+\beta_kx_k\cdot\frac{1}{\sqrt{h(x)}}+u\cdot\frac{1}{\sqrt{h(x)}}\\
+	\implies y^*&=\beta_0x_0^*+\beta_1x_1^*+\cdots+\beta_kx_k^*+u^*\\
+\end{align*}
+while $x_0^* = \frac{1}{\sqrt{h(x)}}$ and $Var(u^*|x) = \sigma_u^2$\\
+OLS applied to the transformed model is BLUE.
+
+\subsection{Testing Heteroskadasticity}
+\begin{align*}
+	H_0&:Var(u|x) = \sigma_{u}^2\iff E[u^2|x] = \sigma_{u}^2\\
+	H_1 &: Var(u|x) \neq \sigma_{u}^2 
+\end{align*}
+\textbf{STEPS:}
+\begin{itemize}
+	\item Regress Y on X and get $\hat{u_i} = y_i-x_i\hat{\beta}$
+	\item Estimate the regression i.e to see whether the residual is correlated with explanatory variales:$\hat{u}^2 = \delta_0+\delta_1x_1+\cdots+\delta_kx_k+\text{(Interacting Terms)}+ v$
+	\item F-test: $H_0: \delta_0=\delta_1=\cdots=\delta_k=0$
+\end{itemize}
+
+\section{Instrumental Variables}
+\textbf{Endogeneity: }when $cov(x,u)\neq 0\implies $ OLS is inconsistent.This can be caused by :
+\begin{itemize}
+	\item omitted variable biased
+	\item measurement error
+	\item simultaneity(i.e X can cause Y but Y also cause X)
+	\item sample selection
+\end{itemize}
+
+\subsection{Solution of Instrumental Variable in Simple Regression}
+$y = \beta_0+\beta_1x_1+u, cov(x,u)\neq 0$\\
+\textbf{Assumption: }Z is observed and is s.t
+\begin{itemize}
+	\item $cov(z,u) = 0$ i.e Valid Instrmental Variable
+	\item $cov(x,z)\neq 0$ i.e Relevant Instrumental Variable
+\end{itemize}
+We call Z an instrumental variable\\
+\\
+E.g $y = \beta_0+\beta_1x_1+u$\\
+y = wage/income\\
+x = education\\
+u = unobserved ability
+\begin{itemize}
+	\item What if Z = SIN $\implies cov(SIN,u) = 0, cov(SIN,x) = 0 \implies $ violate relevant assumption
+	\item What if Z = IQ $\implies cov(IQ,u) \neq 0, cov(IQ,x) \neq 0 \implies $ violate valid assumption and good proxies are bad IV's
+	\item What if Z = Parents'education $\implies cov(z,u) \neq 0, cov(z,x) \neq 0 \implies $ violate valid assumption
+	\item What if Z = number of siblings $\implies cov(z,u) \neq 0, cov(z,x) \neq 0 \implies $ violate valid assumption
+	\item What if Z = tuition subsidies $\implies cov(z,u) = 0 \text{(depends on how subsidies are allocated)}, cov(z,x) \neq 0  $ 
+\end{itemize}
+Bottom line: need to discuss 
+\begin{itemize}
+	\item $cov(x,u)\neq 0$
+	\item $cov(z,u) = 0$
+	\item $cov(x,z)\neq 0$
+\end{itemize}
+\subsection{Instrumental Variable Estimator}
+\subsubsection{Assumptions}
+\begin{itemize}
+	\item A1: $y = \beta_0+\beta_1x+u$
+	\item A2': $cov(z,u) = 0$
+	\item A4': $cov(z,x) \neq 0$
+	\item A3': iid data $\{(y_i,z_i,x_i), i=1,2\cdots,n\}$
+\end{itemize}
+\textbf{IDEA}\\
+Step1:
+\begin{align*}
+	E[y] &= E[\beta_0+\beta_1x+u]\\
+	\implies E[y] &= \beta_0 +\beta_1E[x]+E[u]\\
+	\implies E[y]\cdot E[Z] &= \beta_0E[Z] +\beta_1E[x]E[Z]+E[u]E[Z]
+\end{align*}
+Step2: 
+\begin{align*}
+	yZ &= \beta_0Z+\beta_1xZ+uZ\\
+	\implies E[yZ]  &= \beta_0E[Z]+\beta_1E[xZ]+E[uZ]
+\end{align*}
+Subtract (1) from (2)
+\begin{align*}
+	E[yZ]-E[y]E[Z] &= \beta_0E[Z]-\beta_0E[Z]+\beta_1E[xZ]-\beta_1E[x]E[Z]+E[uZ]-E[u]E[Z]\\
+	cov(y,Z) &= \beta_1cov(x,Z)+cov(u,Z)\\
+	\implies \beta_1 &= \frac{cov(y,Z)}{cov(x,Z)} - \frac{cov(u,Z)}{cov(x,Z)}\\
+	\implies \beta_1 &= \frac{cov(y,Z)}{cov(x,Z)}
+\end{align*}
+\subsection{Proposed Estimator}
+use the sample analogs:
+\begin{align*}
+	\hat{\beta_1}^{IV}  = \frac{\frac{1}{n}\sum_{i=1}^n(z_i-\bar{z})(y_i-\bar{y})}{\frac{1}{n}\sum_{i=1}^n(z_i-\bar{z})(x_i-\bar{x})}
+\end{align*}
+\textbf{Consistency?: } Under A1, A2', A3', A4'
+\begin{align*}
+	\hat{\beta_1}^{IV} \stackrel{p}{\to} \frac{cov(z,y)}{cov(z,x)} = \beta_1
+\end{align*}
+$cov(z,u)\neq 0 \implies $ IV is inconsistent\\
+\textbf{Bias?: }
+\begin{align*}
+	E[\hat{\beta_1}^{IV}] &= E[\frac{\frac{1}{n}\sum_{i=1}^n(z_i-\bar{z})(y_i-\bar{y})}{\frac{1}{n}\sum_{i=1}^n(z_i-\bar{z})(x_i-\bar{x})}]\\
+	&\neq \frac{E[\frac{1}{n}\sum_{i=1}^n(z_i-\bar{z})(y_i-\bar{y})]}{E[\frac{1}{n}\sum_{i=1}^n(z_i-\bar{z})(x_i-\bar{x})]} = \frac{cov(z,y)}{cov(z,x)} = \beta_1\\
+	&\implies \hat{\beta_1}^{IV} is biased
+\end{align*}
+\subsection{Variance of $\hat{\beta_1}^{IV}$}
+A5': $Var(u|z) = \sigma_u^2$
+\begin{align*}
+	Var(\hat{\beta_1}^{IV}) = \frac{\sigma_u^2}{n\sigma_x^2\rho_{xz}^2}\\
+	\widehat{Var(\hat{\beta_1}^{IV})} = \frac{\hat{\sigma_u^2}}{\sum_{i=1}^n(x_i-\bar{x})^2R_{xz}^2}
+\end{align*}
+while $R_{xz}^2$ is the $R^2$ obtained by regressing x on z.\\
+Under A1, A2'-A5':
+\begin{align*}
+	T = \frac{\hat{\beta_1}^{IV}-\beta_1}{\sqrt{\widehat{Var(\hat{\beta_1}^{IV})}}} \stackrel{a}{\sim} N(0,1)
+\end{align*}
+$\implies$ usual T-test, F-test, CI are asymptotically valid.\\
+There exists Het-robust se for $\hat{\beta_1}^{IV}$
+
+\subsection{Compare OLS and IV}
+\textbf{Case 1:}\\
+If $cov(x,u) = 0$ and $cov(z,u) = 0$\\
+Then $\begin{cases}
+	\hat{\beta}_{OLS}\stackrel{p}{\to} \hat{\beta} \wedge \hat{\beta}_{IV} \stackrel{p}{\to} \beta\\
+	\widehat{Var(\hat{\beta_1}_{OLS})} = \frac{\hat{\sigma_u^2}}{\sum_{i=1}^n(x_i-\bar{x})^2} \leq \frac{\hat{\sigma_u^2}}{\sum_{i=1}^n(x_i-\bar{x})^2R_{xz}^2} = \widehat{Var(\hat{\beta_1}^{IV})}\text{ Homos Case}\\
+	\implies \text{use OLS!}
+\end{cases}$\\
+\\
+\textbf{Case 2:}\\
+If $cov(x,u) \neq 0$ and $cov(z,u) = 0$\\
+Then $\begin{cases}
+	\hat{\beta}_{OLS}\not\stackrel{p}{\to} \hat{\beta} \wedge \hat{\beta}_{IV} \stackrel{p}{\to} \beta\\
+	\widehat{Var(\hat{\beta_1}_{OLS})} = \frac{\hat{\sigma_u^2}}{\sum_{i=1}^n(x_i-\bar{x})^2} \leq \frac{\hat{\sigma_u^2}}{\sum_{i=1}^n(x_i-\bar{x})^2R_{xz}^2} = \widehat{Var(\hat{\beta_1}^{IV})}\\
+	\implies \text{use IV!}
+\end{cases}$\\
+\\
+\textbf{Case 3:}\\
+If $cov(x,u) \neq 0$ and $cov(z,u) \neq 0$\\
+\begin{align*}
+	\hat{\beta}_{OLS}\stackrel{p}{\to} \beta +\frac{cov(x,u)}{Var(x)}\\
+	\hat{\beta}_{IV}\stackrel{p}{\to} \beta + \frac{cov(z,u)}{cov(z,x)}
+\end{align*}
+Even if $|cov(z,u)|<|cov(x,u)|$, if $cov(z,x)$ is very small $\implies |\frac{cov(x,u)}{Var(x)}|<|\frac{cov(z,u)}{cov(z,x)}|$ in which OLS would be better. \\
+But in general, it is unclear which one is better.
+
+\subsection{Weak Instruments}
+when $cov(z,x)$ is small, we say the instrument z is weak.
+\subsubsection{problems from weak IVs}
+\begin{itemize}
+	\item $\widehat{Var(\hat{\beta_1}^{IV})} = \frac{\hat{\sigma_u^2}}{\sum_{i=1}^n(x_i-\bar{x})^2R_{xz}^2},\quad R_{xz}^2\approx 0 \implies \widehat{Var(\hat{\beta_1}^{IV})}\uparrow$
+	\item $T = \frac{\hat{\beta_1}^{IV}-\beta_1}{\sqrt{\widehat{Var(\hat{\beta_1}^{IV})}}} \not\stackrel{a}{\sim} N(0,1) \implies $ usuals CI, T,R are invalid
+	\item if $cov(z,u)\neq 0 \implies \hat{\beta_1}^{IV} =\beta + \frac{cov(z,u)}{cov(z,x)} $ is big. 
+\end{itemize}
+\subsubsection{Rule of Thumb}
+\textbf{How do we detect weak IV?}\\
+Regress X on Z, and get the F-Stat
+\begin{align*}
+	F-stat<10\implies \text{Z is a weak IV}\\
+	F-stat\geq10\implies \text{Z is a strong IV}
+\end{align*}
+
+\subsection{General Case of IV}
+\textbf{Structural Equation}
+\begin{align*}
+	y = \beta_0+\beta_1x+\beta_2z_1+\beta_3z_2+\cdots+\beta_k z_{k-1}+u
+\end{align*}
+\begin{itemize}
+	\item x is endogenous regression ($cov(x,u)\neq 0$)
+	\item $z_1,z_2,\cdots,z_{k-1}$ are exogenous regression ($cov(z_j,u) = 0, for j = 1,\cdots, k-1$)
+	\item $z_k,z_{k+1},\cdots,z_{q}$ are instrumental variables ($cov(z_j,u) = 0, for j = k,\cdots, q$)
+	\item $z = (z_1,\cdots,z_{k-1},z_k,\cdots,,z_q)$ is exogenous
+\end{itemize}
+Reduced from Equation: ($cov(z_j,v) = 0$)i.e write an endogenous variable in terms of exogenous variables.
+\begin{align*}
+	x = \pi_0+\pi_1z_i+\pi_2z_2+\cdots+\pi_qz_q+v = z\pi+v
+\end{align*}
+\textbf{IDEA}: Problem: $cov(x,u)\neq 0$
+\begin{align*}
+	0 &\neq cov(x,u) = cov(z\pi+v,u)\\
+	&=cov(\pi_0+\pi_1x_1+\cdots+\pi_q z_q+v,u)\\
+	&= \pi_1cov(z_1,u)+\pi_2cov(z_2,u) +\cdots+\pi_q cov(z_q,u)+cov(v,u)\\
+	&=cov(v,u)
+\end{align*}
+\subsection{2 Stages Least Squares(2SLS)}
+\textbf{1st stage: } Regress x on all z's ($z_1,\cdots,z_q$) and get $\hat{x_i} = z_i\hat{\pi}$\\
+\textbf{2nd stage: } Regress y on $x_i$ and all exogenous regressors $z_1,z_2,\cdots, z_{k-1}$(no IV included)
+\begin{align*}
+	y &= \beta_0+\beta_1x+\beta_2z_1+\cdots+\beta_k z_{k-1}+u\\
+	&= \beta_0+\beta_1(z\pi+v)+\beta_2z_1+\cdots+\beta_k z_{k-1}+u\\
+	&= \beta_0+\beta_1(\pi_0+\pi_1x_1+\cdots+\pi_q z_q+v)+\beta_2z_1+\cdots+\beta_k z_{k-1}+u\\
+	\implies y &= (\beta_0+\beta_1\pi_0)+(\beta_1\pi_1+\beta_2)z_1+\cdots+(\beta_1\pi_{k-1}+\beta_k)z_{k-1}\\
+	&+(\beta_1\pi_k)z_k+\cdots+(\beta_1\pi_q)z_q+(\beta_1v+u)\\
+	y &= \alpha_0+\alpha_1z_1+\cdots+\alpha_qz_q+\epsilon\\
+	x &= \pi_0+\pi_1z_1+\cdots+\pi_q z_q+v
+\end{align*}
+\textbf{Note:} 
+\begin{align*}
+	\alpha_1=\beta_1\pi_1+\beta_2\\
+	\alpha_2 = \beta_1\pi_2 +\beta+3
+\end{align*}
+For $z_k: \alpha_k = \beta_1\pi_k \implies \beta_1 = \frac{\alpha_k}{\pi_k}$\\
+For $z_{k+1}: \beta_1 = \frac{\alpha_{k+1}}{\pi_{k+1}}$
+
+\subsection{Exogenity Test}
+Want to test $cov(x,u)=0$\\
+\textbf{Problem: }Cannot use OLS to test this. Recall sample covariance between $x_i$ and $\hat{u_i} = y_i - x_i\hat{\beta}$ is zero by construction $\sum x_i\hat{u_i} = 0$\\
+But can use a valid instrument to test it. \\
+\textbf{Idea:}
+\begin{align*}
+	y &= \beta_0+\beta_1x+u\\
+	x &= \pi_0+\pi_1z +v\\
+	cov(z,u) &= cov(z,v) = 0
+\end{align*}
+\textbf{Recall: }$0 \neq cov(x,u) = cov(v,u)$(because $cov(z,v)=0$), take $u = \delta v+e$ so that if $cov(x,u)\neq 0, \delta\neq 0\implies y = \beta_0+\beta_1x+\delta v +e $\\
+\textbf{Steps: }
+\begin{itemize}
+	\item Regress x on z(OLS) and get $\hat{v_i} = x_i-z_i\hat{\pi}$
+	\item Regress $y_i$ on $x_i$ and $\hat{v_i}$ (OLS)
+	\item Test $H_0: \delta=0$ vs $H_1: \delta\neq 0$ (use a t-test) 
+\end{itemize}
+\textbf{Observation: }
+\begin{itemize}
+	\item called control function
+	\item control function and 2SlS are numerically equivalent
+	\item This depends on $cov(z,u)=0$
+\end{itemize}
+\textbf{Problem: } Cannot use IV estimator to test $cov(z,u) =0$. In the data, the covariance between $z_i$ and $\hat{u_i} $ is zero by construction $\sum_{i=1}^nz_i\hat{u_i}=0, \hat{u_i} = y_i-x_i\hat{\beta}^{IV}$
+
+\subsubsection{Over-Identification Test}
+
+\begin{align*}
+	y &= \beta_0+\beta_1x+v\\
+	x &= \pi_0+\pi_1z_1+\pi_2z_2 +v\\
+	cov(z_1,u) &= cov(z_2,u) = cov(z_1,v) = cov(z_2,v) = 0
+\end{align*}
+\textbf{IDEA}
+If you run 2SlS using $z_1$ only, $\implies \tilde{\beta}_1^{IV}$\\
+If you run 2SLS using $z_2$ only, $\implies \check{\beta}_1^{IV}$\\
+Thus under the assumption that both $z_1$ and $z_2$ are valid IVs. We should have $\tilde{\beta}_1^{IV} \approx \check{\beta}_1^{IV}$\\
+If they are very different, then either $z_1$ or $z_2$ or both $z_1$ and $z_2$ are invalid. \\
+Key: is to test the distance between, if the difference is to big, then reject.
+\begin{enumerate}
+	\item Estimate structural equation using all IV's and get $\hat{u_i}$
+	\item Regress $\hat{u_i}$ on all exogenous variables (using OLS) and get $R^2$
+	\item Under $H_0: NR^2 \sim \chi_q^2$ where q = number of estimators  =. number of endogenous regressors, N = number of observations(number of IV should be greater or equal to the number of endogenous x's. Each endo x's shoudl have at least one related IV)
+\end{enumerate}
+\textbf{Bad News: }
+\begin{enumerate}
+	\item If you have one IV, then you cannot test if cov(z,u) = 0
+	\item If you have more IV's then endo regressors, you can run the over-ID test. But if you reject H0, then you know something is wrong(either $z_1$ is invalid or $z_2$ is invalid or both are invalid) but you don't know which one is invalid(no guidance for what to do next).
+	\item If you don't reject H0(no evidence that something is wrong), that doesn't guarantee that both IVs are valid (they can both be invalid and dilivers similar estimates $\tilde{\beta}_1^{IV} \approx \check{\beta}_1^{IV}$)
+\end{enumerate}
+
+
+\end{document}

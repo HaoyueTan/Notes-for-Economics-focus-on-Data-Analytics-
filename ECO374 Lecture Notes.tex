@@ -1,0 +1,183 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[margin=1in,headheight=13.6pt]{geometry}
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{thrm}
+\newtheorem{thrm}{Theorem}[section]
+\theoremstyle{lma}
+\newtheorem{lma}{Lemma}[section]
+\theoremstyle{ppst}
+\newtheorem{ppst}{Proposition}[section]
+\theoremstyle{crlr}
+\newtheorem{crlr}{Corollary}[section]
+\usepackage{graphicx}
+\renewcommand{\baselinestretch}{1.5}
+\newenvironment{rcases}
+  {\left.\begin{aligned}}
+  {\end{aligned}\right\rbrace}
+\usepackage{color}  
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true
+    linktoc=all
+    linkcolor=blue
+}
+\usepackage{fancyheadings}
+\pagestyle{fancyplain}
+\fancypagestyle{plain}{
+\renewcommand{\headrulewidth}{0.4pt}
+}
+\lhead{\fancyplain{Haoyue(Heather) Tan}{Haoyue(Heather) Tan}}
+\rhead{\fancyplain{ECO374 lecture Notes}{ECO374 Lecture Notes}}
+\title{ECO374 - Forecasting and Time Series Econometrics}
+\author{Heather Tan}
+\date{Jan - Apr 2020}
+\begin{document}
+
+\maketitle	
+\tableofcontents
+\pagebreak
+
+
+\section{Statistics and Tools for the Forcaster}
+\subsection{Stochastic Process}
+\begin{definition}
+	A collection of random variables $\{Y_t\} = Y_1,\cdots,Y_T$ indexed by time is called a stochastic process, or a time-series process
+\end{definition}
+Each random variable $Y_t$ in stochastic process $\{Y_t\}$ is associated with a density function conditional on time.\\
+\begin{definition}
+	An outcome of a stochastic process is a time series
+\begin{align*}
+	\{y_t\} = y_1,\cdots, y_T
+\end{align*}
+where each $y_1,\cdots, y_T$ is an observed data point.
+\end{definition}
+\subsection{Assumption}
+For each random variable $Y_t$ we only have one observation $y_t$. Hence we can not alculate estimated $E[Y_t]$ or $Var(Y_t)$ from the observed data, unless we impose further assumptions on $\{Y_t\}$.
+\begin{itemize}
+	\item Stationarity
+	\item Ergodicity
+\end{itemize}
+\subsubsection{Strong Stationarity}
+\begin{definition}
+	A stochastic process $\{Y_t\}$ is said to be \textbf{first order strongly stationary} if all random variables $Y_t \forall t = 1,\cdots, T$ have the same probability density function.
+\end{definition}
+i.e same $\mu,\sigma^2$
+\subsubsection{Weak Stationarity}
+\begin{definition}
+	A stochastic process $\{Y_t\}$ is said to be \textbf{first order weakly stationary }if all variables $Y_t \forall t = 1,\cdots, T$ have the same mean.
+\begin{align*}
+	\mu_{Y_1} = \mu_{Y_2} = \cdots = \mu_{Y_T}
+\end{align*}
+\end{definition}
+
+\begin{definition}
+	A stochastic process $\{Y_t\}$ is said to be \textbf{second order weakly stationary }if all variables $Y_t \forall t = 1,\cdots, T$ have the same mean and variance and the covariances do not depend on t.
+\begin{align*}
+	\mu_{Y_1} &= \mu_{Y_2} = \cdots = \mu_{Y_T}\\
+	\sigma^2_{Y_1} &= \sigma^2_{Y_2} = \cdots = \sigma^2_{Y_T}\\
+	\rho_{Y_tY_{t-k}}&= \rho_{|k|}
+\end{align*}
+\end{definition}
+
+\subsubsection{Transformations by lag and difference operator}
+Strong stationarity is difficult to test so we transform nonstationary into a stationary by lag and difference operator.\\
+\textbf{Lag operator}:
+\begin{align*}
+	LY_t = Y_{t-1}
+\end{align*}
+\textbf{first difference operator}:
+\begin{align*}
+	\Delta Y_t &= Y_t-LY_t\\
+	&= Y_t-Y_{t-1}
+\end{align*}
+In many case of $\{Y_t\}$, $\{\Delta Y_t\}$becomes first order weakly stationary and $\{\Delta log(Y_t)\}$become second order weakly stationary.
+\subsection{Autocorrelation Function ACF}
+The ACF of order k is given by 
+\begin{align*}
+	\rho_{Y_t, Y_{t-k}} = \frac{cov(Y_t, Y_{t-k})}{\sqrt{var(Y_t)}\sqrt{var(Y_{t-k})}}
+\end{align*}
+The ACF is the mapping $\rho:k\to \rho_{Y_t, Y_{t-k}}$
+\subsubsection{Covariance stationary process}
+For a covariance stationary process, the ACF can be simplified as a constant for all t and k
+\begin{align*}
+	var(Y_t) &= var(Y_{t-k}) = \sigma^2\\
+	cov(Y_t,Y_{t-k}) &= \sigma_k
+\end{align*}
+Then, the auto correlation coefficient of order k does not depend on t, and can be expressed as 
+\begin{align*}
+	\rho_k = \frac{\rho_k}{\sqrt{\sigma^2}\sqrt{\sigma^2}} = \frac{\rho_k}{\sigma^2}\equiv \frac{\gamma_k}{\gamma_0}
+\end{align*}
+
+
+\section{5- Model Assessment}
+\subsection{Model Selection}
+\subsubsection{Akaike information criterion(AIC)}
+\begin{align*}
+	AIC = -2ln(L)+2k
+\end{align*}
+\subsubsection{Bayes information criterion a.k.a Schwarz IC(SIC) }
+\begin{align*}
+	BIC = -2ln(L)+2ln(N)k
+\end{align*}
+where ln(L) is the model log-likelihood, k is the number of estimated parameters and N is the sample size. 
+\begin{itemize}
+	\item The best model is the one that minimizes AIC or BIC
+\end{itemize}
+\subsection{Average Forecast Error}
+Suppose we have a time series data sample of size T, and use the recursive scheme starting from time $t<T$ to construct the sequence of forcasting and the associated forcast errors
+\begin{align*}
+	\{f_{t,h},f_{t+1,h},\cdots, f_{t+j,h},\cdots, f_{T-h,h}\}\\
+	\{e_{t,h},e_{t+1,h},\cdots, e_{t+j,h},\cdots, e_{T-h,h}\}
+\end{align*}
+\subsubsection{Mean squared error(MSE)}
+\begin{align*}
+	MSE = \frac{1}{T-h-t+1}\sum_{j=1}^{T-j-t}e_{t+j,h}^2
+\end{align*}
+\subsubsection{Mean absolute error(MAE)}
+\begin{align*}
+	MSE = \frac{1}{T-h-t+1}\sum_{j=1}^{T-j-t}|e_{t+j,h}|
+\end{align*}
+\subsubsection{Mean absolute percentage error(MAPE)}
+\begin{align*}
+	MSE = \frac{1}{T-h-t+1}\sum_{j=1}^{T-j-t}|\frac{e_{t+j,h}}{y_{t+j+h}}|
+\end{align*}
+\subsection{Case study set up}
+From component AR(p) and MA(q) we have the combined ARMA(p,q) model:
+\begin{align*}
+	Y_t = c+\phi_1 Y_{t-1}+\cdots+\phi_p Y_{t-p}+\epsilon_t+\theta_1\epsilon_{t-1}+\cdots+\theta_q\epsilon_{t-q}
+\end{align*}
+\textbf{Structure}
+\begin{itemize}
+	\item Data - ACF, PACF
+	\item Model - selection, estimation
+	\item Forecast
+	\item Assessment of forecast accuracy
+\end{itemize}
+
+\section{Trends}
+\subsection{Deterministic Trend}
+The simplest model with a deterministic trend is 
+\begin{align*}
+	Y_t = \beta_0+\beta_1t+\epsilon_t
+\end{align*}
+Its unconditional moments are as follows:
+\begin{align*}
+	E[Y_t] &= E[\beta_0+\beta_1t+\epsilon_t]\\
+	&= \beta_0+\beta+1 t \\
+	&=\mu\\
+	Var(Y_t)
+\end{align*}
+\subsection{Trend Stationarity}
+The ACF is then
+
+
+
+\end{document}
